@@ -1,18 +1,20 @@
 package mszczep.futuremindrecruitapp.view
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
-import mszczep.futuremindrecruitapp.R
+import androidx.fragment.app.Fragment
 import mszczep.futuremindrecruitapp.databinding.FragmentFirstBinding
+import mszczep.futuremindrecruitapp.viewModel.MainActivityViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class FirstFragment : Fragment() {
+
+    private val _viewModel: MainActivityViewModel by viewModel()
 
     private var _binding: FragmentFirstBinding? = null
 
@@ -34,7 +36,9 @@ class FirstFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonFirst.setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+            _viewModel.getRecruitmentTaskData()
+
+//            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
     }
 
