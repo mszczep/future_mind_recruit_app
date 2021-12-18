@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/item_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mario Fafangel"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerview_list_item_horizontal_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+         />
+
+    <TextView
+        android:id="@+id/item_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+
+        android:text="Tenderloin alcatra prosciutto spare ribs filet mignon.  Pastrami tail andouille, alcatra chislic shoulder rump bacon porchetta chuck t-bone strip steak ball tip chicken ribeye.  Ribeye bresaola pancetta, cupim frankfurter beef ribs landjaeger rump meatloaf corned beef tongue.  Drumstick short ribs pork belly tongue.\n\nCapicola meatball rump jerky short loin meatloaf turducken.  Strip steak ribeye pig, ham tenderloin meatball biltong sirloin andouille cow cupim sausage capicola.  Turducken meatloaf shoulder bresaola capicola prosciutto fatback jowl.  Chuck beef ribs leberkas, shoulder tongue tri-tip pork belly brisket kielbasa chislic capicola alcatra.  Short loin leberkas landjaeger chicken spare ribs biltong jowl pork belly drumstick pork."
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerview_list_item_horizontal_guideline" />
+
+    <TextView
+        android:id="@+id/item_modification_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2021-12-18"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0" />
+
+    <ImageView
+        android:id="@+id/item_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerview_list_item_horizontal_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/recyclerview_list_item_vertical_guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/recyclerview_list_item_vertical_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/recyclerview_list_item_horizontal_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.25" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
