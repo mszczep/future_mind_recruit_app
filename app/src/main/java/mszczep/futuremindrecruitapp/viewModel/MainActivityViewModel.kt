@@ -5,19 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import mszczep.futuremindrecruitapp.model.Requests
+import mszczep.futuremindrecruitapp.model.db.ITableRecruitmentData
 
-//class MainActivityViewModel(application: Application): AndroidViewModel(application) {
-class MainActivityViewModel(val mRequests: Requests): ViewModel() {
-
-//    private val mRequests = Requests
+class MainActivityViewModel(val mRequests: Requests, val iTableRecruitmentData: ITableRecruitmentData): ViewModel() {
 
     fun getRecruitmentTaskData(){
         viewModelScope.launch {
             val response = mRequests.getRecruitmentTaskData()
-            Log.d("future_mind_debug","Response: $response")
+            val a = iTableRecruitmentData.getAll()
+            Log.d("future_mind_debug","Response: $response ++ db response: $a")
             val body = response.body()
-            Log.d("future_mind_debug","Body: $body")
-
+//            Log.d("future_mind_debug","Body: $body")
         }
     }
 

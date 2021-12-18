@@ -4,18 +4,20 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import mszczep.futuremindrecruitapp.model.db.ITableRecruitmentData
+import mszczep.futuremindrecruitapp.model.db.TableRecruitmentData
 
 
-//@Database(
-//    entities = [
-//        TODO()::class
-//    ],
-//    version = 1,
-//    exportSchema = false
-//)
+@Database(
+    entities = [
+        TableRecruitmentData::class
+    ],
+    version = 1,
+    exportSchema = false
+)
 
 abstract class AppDatabase: RoomDatabase() {
-//    abstract fun TODOInterface(): TODOInterface TODO
+    abstract fun iTableRecruitmentData() : ITableRecruitmentData
 
     companion object {
         @Volatile

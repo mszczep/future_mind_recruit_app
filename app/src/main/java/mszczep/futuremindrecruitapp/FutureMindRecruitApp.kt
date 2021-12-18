@@ -2,6 +2,7 @@ package mszczep.futuremindrecruitapp
 
 import android.app.Application
 import mszczep.futuremindrecruitapp.utils.appModule
+import mszczep.futuremindrecruitapp.utils.dbModule
 import mszczep.futuremindrecruitapp.utils.retrofitModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
@@ -12,7 +13,7 @@ class FutureMindRecruitApp : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@FutureMindRecruitApp)
-            modules(appModule, retrofitModule)
+            modules(appModule, retrofitModule, dbModule)
         }
     }
 }

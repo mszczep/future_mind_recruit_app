@@ -8,7 +8,7 @@ import org.koin.dsl.module
 
 val appModule = module {
     factory { Requests(get()) }
-    viewModel { MainActivityViewModel(get()) }
+    viewModel { MainActivityViewModel(get(), get()) }
 }
 
 
