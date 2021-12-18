@@ -5,7 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebViewClient
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import mszczep.futuremindrecruitapp.R
 import mszczep.futuremindrecruitapp.databinding.FragmentSecondBinding
 
@@ -15,6 +17,7 @@ import mszczep.futuremindrecruitapp.databinding.FragmentSecondBinding
 class SecondFragment : Fragment() {
 
     private var _binding: FragmentSecondBinding? = null
+    private val args: SecondFragmentArgs by navArgs()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -33,9 +36,10 @@ class SecondFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonSecond.setOnClickListener {
-            findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
-        }
+        val link = args.descriptionLink
+        val webView = binding.webView
+        webView.webViewClient = WebViewClient()
+        webView.loadUrl(link)
     }
 
     override fun onDestroyView() {

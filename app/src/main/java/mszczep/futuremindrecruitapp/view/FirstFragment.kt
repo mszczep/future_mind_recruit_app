@@ -6,9 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import mszczep.futuremindrecruitapp.databinding.FragmentFirstBinding
+import mszczep.futuremindrecruitapp.utils.OnItemClickListener
+import mszczep.futuremindrecruitapp.utils.addOnItemClickListener
 import mszczep.futuremindrecruitapp.viewModel.MainActivityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -54,6 +57,16 @@ class FirstFragment : Fragment() {
                     )
                 )
                 recyclerView.adapter = RecyclerViewAdapter(it)
+                recyclerView.addOnItemClickListener(object: OnItemClickListener{
+                    override fun onItemClicked(position: Int, view: View) {
+                        if(it[position].descriptionLink == null)
+                            return
+
+                        val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(it[position].descriptionLink!!)
+                        findNavController().navigate(action)
+                    }
+
+                })
             }
         }
         _viewModel.getWebRecruitmentTaskData.observe(viewLifecycleOwner){
@@ -87,6 +100,7 @@ class FirstFragment : Fragment() {
 
         binding.buttonFirst.setOnClickListener {
 //            _viewModel.getWebRecruitmentTaskData()
+
             getDBData()
 //            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
