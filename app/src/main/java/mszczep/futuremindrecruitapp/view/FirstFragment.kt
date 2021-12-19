@@ -57,6 +57,10 @@ class FirstFragment : Fragment() {
                 binding.swipeRefreshLayout.isRefreshing = false
                 val recyclerView = binding.recyclerView
                 recyclerView.visibility = View.VISIBLE
+
+                if(isTablet)
+                    binding.theGreatSeparator?.visibility = View.VISIBLE
+
                 recyclerView.layoutManager = LinearLayoutManager(context)
                 recyclerView.addItemDecoration(
                     DividerItemDecoration(
@@ -74,7 +78,7 @@ class FirstFragment : Fragment() {
                             val webView = binding.webView
                             webView?.webViewClient = WebViewClient()
                             webView?.loadUrl(it[position].descriptionLink!!)
-                            binding.webView?.visibility = View.GONE
+                            binding.webView?.visibility = View.VISIBLE
                         } else {
                             val action =
                                 FirstFragmentDirections.actionFirstFragmentToSecondFragment(it[position].descriptionLink!!)
@@ -129,6 +133,11 @@ class FirstFragment : Fragment() {
      * A function refreshing data; clears local db and fills it with new entried downloaded from the internet
      */
     private fun refreshData() {
+        if(isTablet){
+            binding.webView?.visibility = View.GONE
+            binding.theGreatSeparator?.visibility = View.GONE
+        }
+
         binding.recyclerView.visibility = View.GONE
         binding.swipeRefreshLayout.isRefreshing = false
         _viewModel.refreshData()
