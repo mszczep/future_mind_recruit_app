@@ -1,14 +1,13 @@
 package mszczep.futuremindrecruitapp.view
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import mszczep.futuremindrecruitapp.R
 import mszczep.futuremindrecruitapp.databinding.FragmentFirstBinding
 import mszczep.futuremindrecruitapp.utils.OnItemClickListener
 import mszczep.futuremindrecruitapp.utils.addOnItemClickListener
@@ -31,6 +30,7 @@ class FirstFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        setHasOptionsMenu(true)
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
 
         _viewModel.progressBar.observe(viewLifecycleOwner){
@@ -48,7 +48,9 @@ class FirstFragment : Fragment() {
             if(it.isEmpty()){
                 loadDataFromNet()
             }else{
+                binding.swipeRefreshLayout.isRefreshing = false
                 val recyclerView = binding.recyclerView
+                recyclerView.visibility = View.VISIBLE
                 recyclerView.layoutManager = LinearLayoutManager(context)
                 recyclerView.addItemDecoration(
                     DividerItemDecoration(
@@ -76,11 +78,15 @@ class FirstFragment : Fragment() {
         }
 
         _viewModel.errorHandler.observe(viewLifecycleOwner){
+            binding.swipeRefreshLayout.isRefreshing = false
             Toast.makeText(requireContext(), "Error handling TODO()", Toast.LENGTH_SHORT).show()
         }
 
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            refreshData()
+        }
 
-
+        getDBData()
         return binding.root
     }
 
@@ -92,17 +98,36 @@ class FirstFragment : Fragment() {
     }
 
     private fun loadDataFromNet(){
+        binding.recyclerView.visibility = View.GONE
         _viewModel.getWebRecruitmentTaskData()
+    }
+
+    private fun refreshData(){
+        binding.recyclerView.visibility = View.GONE
+        binding.swipeRefreshLayout.isRefreshing = false
+        _viewModel.refreshData()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonFirst.setOnClickListener {
-//            _viewModel.getWebRecruitmentTaskData()
+//        binding.buttonFirst.setOnClickListener {
+//            getDBData()
+//        }
+    }
 
-            getDBData()
-//            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_main, menu)
+//        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+       return when(item.itemId){
+            R.id.menu_refresh -> {
+                refreshData()
+                true
+            }
+           else -> super.onOptionsItemSelected(item)
         }
     }
 

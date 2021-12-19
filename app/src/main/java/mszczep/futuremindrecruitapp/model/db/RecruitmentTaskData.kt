@@ -39,7 +39,7 @@ interface ITableRecruitmentData {
      * Database query; clears the table of all data
      */
     @Query("""delete from recruitment_data""")
-    suspend fun deleteAllData()
+    suspend fun deleteAllData(): Int
 
     /**
      * Database query; returns specific order details

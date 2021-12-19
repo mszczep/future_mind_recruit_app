@@ -53,7 +53,7 @@ class MainActivityViewModel(
      * Downloading recruitment task data from web
      */
     fun getWebRecruitmentTaskData() {
-        viewModelScope.launch {
+        launchDataLoad {
             Log.d("future_mind_debug","Start getWeb")
             try {
                 val response = mRequests.getRecruitmentTaskData()
@@ -88,6 +88,22 @@ class MainActivityViewModel(
                 mDisplaySnackbar.value = "Something had gone wrong. Try again."
                 ex.printStackTrace()
             }
+        }
+    }
+
+    fun refreshData(){
+        viewModelScope.launch {
+            deleteAllData()
+            getWebRecruitmentTaskData()
+        }
+    }
+
+    /**
+     * Delete all data from the local db
+     */
+    private fun deleteAllData(){
+        viewModelScope.launch {
+            iTableRecruitmentData.deleteAllData()
         }
     }
 
