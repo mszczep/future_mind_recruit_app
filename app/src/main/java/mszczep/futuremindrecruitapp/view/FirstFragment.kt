@@ -78,8 +78,14 @@ class FirstFragment : Fragment() {
         }
 
         _viewModel.errorHandler.observe(viewLifecycleOwner){
-            binding.swipeRefreshLayout.isRefreshing = false
-            Toast.makeText(requireContext(), "Error handling TODO()", Toast.LENGTH_SHORT).show()
+                binding.errorText.text = it.second ?: ""
+            if(it.first){
+                binding.buttonRetry.visibility = View.VISIBLE
+                binding.errorText.visibility = View.VISIBLE
+            } else {
+                binding.buttonRetry.visibility = View.GONE
+                binding.errorText.visibility = View.GONE
+            }
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
@@ -97,11 +103,17 @@ class FirstFragment : Fragment() {
         _viewModel.queryDBGetRecruitmentTaskData()
     }
 
+    /**
+     * Download data from the internet
+     */
     private fun loadDataFromNet(){
         binding.recyclerView.visibility = View.GONE
         _viewModel.getWebRecruitmentTaskData()
     }
 
+    /**
+     * A function refreshing data; clears local db and fills it with new entried downloaded from the internet
+     */
     private fun refreshData(){
         binding.recyclerView.visibility = View.GONE
         binding.swipeRefreshLayout.isRefreshing = false
@@ -111,9 +123,10 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        binding.buttonFirst.setOnClickListener {
-//            getDBData()
-//        }
+        binding.buttonRetry.setOnClickListener {
+            refreshData()
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
