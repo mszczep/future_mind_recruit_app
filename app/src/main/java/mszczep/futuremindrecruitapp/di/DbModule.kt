@@ -2,8 +2,8 @@ package mszczep.futuremindrecruitapp.utils
 
 import android.app.Application
 import androidx.room.Room
-import mszczep.futuremindrecruitapp.model.db.AppDatabase
-import mszczep.futuremindrecruitapp.model.db.ITableRecruitmentData
+import mszczep.futuremindrecruitapp.data.AppDatabase
+import mszczep.futuremindrecruitapp.data.RecruitmentDataDao
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
@@ -30,7 +30,7 @@ val dbModule = module {
      * @param db A database instance
      * @return Database interface instance
      */
-    fun provideDao(db: AppDatabase): ITableRecruitmentData {
+    fun provideDao(db: AppDatabase): RecruitmentDataDao {
         return db.iTableRecruitmentData()
     }
 

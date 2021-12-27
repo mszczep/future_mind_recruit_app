@@ -1,4 +1,4 @@
-package mszczep.futuremindrecruitapp.viewModel
+package mszczep.futuremindrecruitapp.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -8,16 +8,17 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mszczep.futuremindrecruitapp.model.Requests
-import mszczep.futuremindrecruitapp.model.db.ITableRecruitmentData
-import mszczep.futuremindrecruitapp.model.db.TableRecruitmentData
+import mszczep.futuremindrecruitapp.data.RecruitmentDataDao
+import mszczep.futuremindrecruitapp.data.RecruitmentData
 import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import java.net.UnknownHostException
 import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivityViewModel(
     private val mRequests: Requests,
-    private val iTableRecruitmentData: ITableRecruitmentData
+    private val recruitmentDataDao: RecruitmentDataDao
 ) : ViewModel() {
 
     /**
@@ -32,11 +33,13 @@ class MainActivityViewModel(
     private val mErrorHandler = MutableLiveData<Pair<Boolean, String?>>()
     val errorHandler: LiveData<Pair<Boolean,String?>> get() = mErrorHandler
 
-    private val mRecruitmentData = MutableLiveData<List<TableRecruitmentData>>()
-    val recruitmentData: LiveData<List<TableRecruitmentData>> get() = mRecruitmentData
+    private val mRecruitmentData = MutableLiveData<List<RecruitmentData>>()
+    val recruitmentData: LiveData<List<RecruitmentData>> get() = mRecruitmentData
 
     private val mGetWebRecruitmentTaskData = MutableLiveData<Boolean>()
     val getWebRecruitmentTaskData: LiveData<Boolean> get() = mGetWebRecruitmentTaskData
+
+
 
     /**
      * Downloading recruitment task data from web and inserting it into the local db
@@ -54,8 +57,8 @@ class MainActivityViewModel(
                         val splitLink = extractLink(it.description)
                         val description = if (splitLink != null) splitLink[0] else it.description
                         val extractedLink = if (splitLink != null) splitLink[1] else null
-                        iTableRecruitmentData.insertNewData(
-                            TableRecruitmentData(
+                        recruitmentDataDao.insertNewData(
+                            RecruitmentData(
                                 0,
                                 description,
                                 it.image_url,
@@ -94,7 +97,7 @@ class MainActivityViewModel(
      */
     private fun deleteAllData() {
         viewModelScope.launch {
-            iTableRecruitmentData.deleteAllData()
+            recruitmentDataDao.deleteAllRecruitmentData()
         }
     }
 
@@ -105,7 +108,6 @@ class MainActivityViewModel(
      */
     private fun extractLink(string: String): List<String>? {
         val splitString = string.split("\t")
-        Log.d("future_mind_debug", "Link extraction: ${splitString[1]}")
         return if (splitString.size == 2) splitString else null
     }
 
@@ -116,8 +118,8 @@ class MainActivityViewModel(
      */
     private fun formatDate(string: String): String? {
         return try {
-            val sdfInput = SimpleDateFormat("yyyy-MM-dd")
-            val sdfOutput = SimpleDateFormat("dd-MM-yyyy")
+            val sdfInput = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val sdfOutput = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
             val date = sdfInput.parse(string)
             sdfOutput.format(date)
         } catch (ex: IllegalArgumentException) {
@@ -132,7 +134,7 @@ class MainActivityViewModel(
     fun queryDBGetRecruitmentTaskData() {
         launchDataLoad {
             Log.d("future_mind_debug", "DB query for data")
-            val data = iTableRecruitmentData.getAll()
+            val data = recruitmentDataDao.getAll()
             Log.d("future_mind_debug", "Got some data here: ${data.size}")
             mRecruitmentData.value = data
         }

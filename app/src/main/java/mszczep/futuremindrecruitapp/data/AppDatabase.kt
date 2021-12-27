@@ -1,4 +1,4 @@
-package mszczep.futuremindrecruitapp.model.db
+package mszczep.futuremindrecruitapp.data
 
 import android.content.Context
 import androidx.room.Database
@@ -8,14 +8,14 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [
-        TableRecruitmentData::class
+        RecruitmentData::class
     ],
     version = 1,
     exportSchema = false
 )
 
 abstract class AppDatabase: RoomDatabase() {
-    abstract fun iTableRecruitmentData() : ITableRecruitmentData
+    abstract fun iTableRecruitmentData() : RecruitmentDataDao
 
     companion object {
         @Volatile

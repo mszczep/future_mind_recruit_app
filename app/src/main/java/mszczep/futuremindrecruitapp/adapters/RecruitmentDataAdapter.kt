@@ -1,21 +1,20 @@
-package mszczep.futuremindrecruitapp.view
+package mszczep.futuremindrecruitapp.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import mszczep.futuremindrecruitapp.R
-import mszczep.futuremindrecruitapp.model.db.TableRecruitmentData
+import mszczep.futuremindrecruitapp.data.RecruitmentData
 
-class RecyclerViewAdapter(val list: List<TableRecruitmentData>): RecyclerView.Adapter<ViewHolder>() {
+class RecyclerViewAdapter(val list: List<RecruitmentData>): RecyclerView.Adapter<ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_list_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item_recruitment_data, parent, false)
         return ViewHolder(view)
     }
 
