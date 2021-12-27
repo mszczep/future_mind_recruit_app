@@ -1,4 +1,4 @@
-package mszczep.futuremindrecruitapp.views
+package mszczep.futuremindrecruitapp.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

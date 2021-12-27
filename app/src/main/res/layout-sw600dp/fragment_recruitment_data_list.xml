@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.FragmentRecruitmentDataList">
+    tools:context=".ui.FragmentRecruitmentDataList">
 
 
     <ProgressBar
@@ -44,7 +44,7 @@
         android:id="@+id/error_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Something had gone wrong."
+        android:text="@string/something_had_gone_wrong"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

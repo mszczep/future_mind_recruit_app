@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide
 import mszczep.futuremindrecruitapp.R
 import mszczep.futuremindrecruitapp.data.RecruitmentData
 
-class RecyclerViewAdapter(val list: List<RecruitmentData>): RecyclerView.Adapter<ViewHolder>() {
+class RecyclerViewAdapter(private val list: List<RecruitmentData>): RecyclerView.Adapter<ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item_recruitment_data, parent, false)

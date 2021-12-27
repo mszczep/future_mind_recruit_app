@@ -10,4 +10,6 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="retry">Retry</string>
+    <string name="something_had_gone_wrong">Something had gone wrong.</string>
+    <string name="refresh">Refresh</string>
 </resources>

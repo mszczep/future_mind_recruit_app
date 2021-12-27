@@ -1,4 +1,4 @@
-package mszczep.futuremindrecruitapp.views
+package mszczep.futuremindrecruitapp.ui
 
 import android.os.Bundle
 import android.view.*
@@ -28,7 +28,7 @@ class FragmentRecruitmentDataList : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         setHasOptionsMenu(true)
         isTablet = context?.resources?.getBoolean(R.bool.isTablet) ?: false

@@ -1,6 +1,6 @@
-package mszczep.futuremindrecruitapp.utils
+package mszczep.futuremindrecruitapp.di
 
-import mszczep.futuremindrecruitapp.model.NetworkService
+import mszczep.futuremindrecruitapp.data.NetworkService
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit
 
 val retrofitModule = module {
     factory { provideOkHttpClient() }
-    factory { provideApi(get()) }
-    single { provideRetrofit(get())}
+    factory { provideNetworkService(get()) }
+    single { provideRetrofit(get()) }
 }
 
 fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
@@ -18,7 +18,7 @@ fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         .addConverterFactory(GsonConverterFactory.create()).build()
 }
 
-fun provideApi(retrofit: Retrofit): NetworkService = retrofit.create(NetworkService::class.java)
+fun provideNetworkService(retrofit: Retrofit): NetworkService = retrofit.create(NetworkService::class.java)
 
 fun provideOkHttpClient(): OkHttpClient {
     return OkHttpClient.Builder()

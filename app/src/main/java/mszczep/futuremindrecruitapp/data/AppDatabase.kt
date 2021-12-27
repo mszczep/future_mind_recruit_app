@@ -15,7 +15,7 @@ import androidx.room.RoomDatabase
 )
 
 abstract class AppDatabase: RoomDatabase() {
-    abstract fun iTableRecruitmentData() : RecruitmentDataDao
+    abstract fun recruitmentDataDao() : RecruitmentDataDao
 
     companion object {
         @Volatile
@@ -24,10 +24,6 @@ abstract class AppDatabase: RoomDatabase() {
 
         operator fun invoke(context: Context) = instance ?: synchronized(LOCK) {
             instance ?: buildDatabase(context).also { instance = it }
-        }
-
-        fun getInstance(context: Context): AppDatabase {
-            return instance ?: buildDatabase(context).also { instance = it }
         }
 
         private fun buildDatabase(context: Context) =

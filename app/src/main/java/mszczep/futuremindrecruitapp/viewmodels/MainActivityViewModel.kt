@@ -1,13 +1,12 @@
 package mszczep.futuremindrecruitapp.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import mszczep.futuremindrecruitapp.model.Requests
+import mszczep.futuremindrecruitapp.data.Network
 import mszczep.futuremindrecruitapp.data.RecruitmentDataDao
 import mszczep.futuremindrecruitapp.data.RecruitmentData
 import java.lang.IllegalArgumentException
@@ -17,19 +16,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivityViewModel(
-    private val mRequests: Requests,
+    private val mNetwork: Network,
     private val recruitmentDataDao: RecruitmentDataDao
 ) : ViewModel() {
 
-    /**
-     * Progress bar visibility
-     */
     private val mProgressBar = MutableLiveData<Boolean>()
     val progressBar: LiveData<Boolean> get() = mProgressBar
 
-    /**
-     * Error visibility
-     */
     private val mErrorHandler = MutableLiveData<Pair<Boolean, String?>>()
     val errorHandler: LiveData<Pair<Boolean,String?>> get() = mErrorHandler
 
@@ -39,20 +32,13 @@ class MainActivityViewModel(
     private val mGetWebRecruitmentTaskData = MutableLiveData<Boolean>()
     val getWebRecruitmentTaskData: LiveData<Boolean> get() = mGetWebRecruitmentTaskData
 
-
-
-    /**
-     * Downloading recruitment task data from web and inserting it into the local db
-     */
     fun getWebRecruitmentTaskData() {
         launchDataLoad {
-            Log.d("future_mind_debug", "Start getWeb")
             try {
-                val response = mRequests.getRecruitmentTaskData()
+                val response = mNetwork.getRecruitmentTaskData()
                 if (response.code() != 200 || response.body().isNullOrEmpty()) {
                     mErrorHandler.value = Pair(true, "An error has occurred during data download. Please try again")
                 } else {
-                    Log.d("future_mind_debug", "GetWeb got some body here")
                     response.body()!!.forEach {
                         val splitLink = extractLink(it.description)
                         val description = if (splitLink != null) splitLink[0] else it.description
@@ -69,7 +55,6 @@ class MainActivityViewModel(
                             )
                         )
                     }
-                    Log.d("future_mind_debug", "Should be inserted now")
                     mGetWebRecruitmentTaskData.value = true
                 }
             } catch (ex: UnknownHostException) {
@@ -82,9 +67,6 @@ class MainActivityViewModel(
         }
     }
 
-    /**
-     * Data refresh on user swipe or menu click
-     */
     fun refreshData() {
         viewModelScope.launch {
             deleteAllData()
@@ -92,30 +74,17 @@ class MainActivityViewModel(
         }
     }
 
-    /**
-     * Delete all data from the local db
-     */
     private fun deleteAllData() {
         viewModelScope.launch {
             recruitmentDataDao.deleteAllRecruitmentData()
         }
     }
 
-    /**
-     * Link extraction from text
-     * @param string Entry string
-     * @return Array of strings
-     */
     private fun extractLink(string: String): List<String>? {
         val splitString = string.split("\t")
         return if (splitString.size == 2) splitString else null
     }
 
-    /**
-     * Formats date to a different format
-     * @param string Input date
-     * @return Formatted date or null if the date cant be parsed
-     */
     private fun formatDate(string: String): String? {
         return try {
             val sdfInput = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -128,22 +97,14 @@ class MainActivityViewModel(
         }
     }
 
-    /**
-     * DB query for data
-     */
     fun queryDBGetRecruitmentTaskData() {
         launchDataLoad {
-            Log.d("future_mind_debug", "DB query for data")
             val data = recruitmentDataDao.getAll()
-            Log.d("future_mind_debug", "Got some data here: ${data.size}")
             mRecruitmentData.value = data
         }
     }
 
 
-    /**
-     * A helper function displaying a progress bar and also hiding any errors while loading data
-     */
     private fun launchDataLoad(block: suspend () -> Unit): Job {
         return viewModelScope.launch {
             try {

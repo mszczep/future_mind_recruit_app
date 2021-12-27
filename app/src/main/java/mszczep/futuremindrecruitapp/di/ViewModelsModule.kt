@@ -1,12 +1,12 @@
-package mszczep.futuremindrecruitapp.utils
+package mszczep.futuremindrecruitapp.di
 
-import mszczep.futuremindrecruitapp.model.Requests
+import mszczep.futuremindrecruitapp.data.Network
 import mszczep.futuremindrecruitapp.viewmodels.MainActivityViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelsModule = module {
-    factory { Requests(get()) }
+    factory { Network(get()) }
     viewModel { MainActivityViewModel(get(), get()) }
 }
 
