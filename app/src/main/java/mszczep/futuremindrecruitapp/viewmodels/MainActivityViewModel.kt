@@ -6,11 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import mszczep.futuremindrecruitapp.api.NetworkApi
-import mszczep.futuremindrecruitapp.data.*
+import mszczep.futuremindrecruitapp.data.RecruitmentData
+import mszczep.futuremindrecruitapp.data.RecruitmentDataDao
+import mszczep.futuremindrecruitapp.data.RecruitmentDataResponse
+import mszczep.futuremindrecruitapp.data.RecruitmentDataState
 import mszczep.futuremindrecruitapp.utils.extractUrl
 import mszczep.futuremindrecruitapp.utils.formatDate
-import java.lang.IllegalArgumentException
-import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivityViewModel(
@@ -84,37 +85,8 @@ class MainActivityViewModel(
         recruitmentDataDao.insertAll(recruitmentData)
     }
 
-    private fun formatDate(string: String): String? {
-        return try {
-            val sdfInput = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val sdfOutput = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-            val date = sdfInput.parse(string)
-            sdfOutput.format(date)
-        } catch (ex: IllegalArgumentException) {
-            ex.printStackTrace()
-            null
-        }
-    }
-
     private suspend fun dbQueryGetRecruitmentData(): List<RecruitmentData> {
         return recruitmentDataDao.getAll()
-
     }
-
-
-//
-//    private fun launchDataLoad(block: suspend () -> Unit): Job {
-//        return viewModelScope.launch {
-//            try {
-//                mProgressBar.value = true
-//                mErrorHandler.value = Pair(false, null)
-//                block()
-//            } catch (ex: IllegalStateException) {
-//                ex.printStackTrace()
-//            } finally {
-//                mProgressBar.value = false
-//            }
-//        }
-//    }
 
 }
