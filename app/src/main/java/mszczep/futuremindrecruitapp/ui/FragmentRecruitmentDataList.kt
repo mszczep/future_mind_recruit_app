@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import mszczep.futuremindrecruitapp.R
 import mszczep.futuremindrecruitapp.adapters.RecyclerViewAdapter
+import mszczep.futuremindrecruitapp.data.RecruitmentDataState
 import mszczep.futuremindrecruitapp.databinding.FragmentRecruitmentDataListBinding
 import mszczep.futuremindrecruitapp.utils.OnItemClickListener
 import mszczep.futuremindrecruitapp.utils.addOnItemClickListener
@@ -34,71 +35,53 @@ class FragmentRecruitmentDataList : Fragment() {
         isTablet = context?.resources?.getBoolean(R.bool.isTablet) ?: false
         _binding = FragmentRecruitmentDataListBinding.inflate(inflater, container, false)
 
-        _viewModel.progressBar.observe(viewLifecycleOwner) {
-            if (it) {
-                binding.progressBar.visibility = View.VISIBLE
-            } else {
+        _viewModel.recruitmentDataState.observe(viewLifecycleOwner){
+            when(it){
+                is RecruitmentDataState.Loading -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
+                    binding.constraintLoadingLayout.visibility = View.VISIBLE
+                    binding.constraintSuccessLayout.visibility = View.GONE
+                    binding.constraintErrorLayout.visibility = View.GONE
+                }
+                is RecruitmentDataState.Success -> {
+                    binding.constraintLoadingLayout.visibility = View.GONE
+                    binding.constraintSuccessLayout.visibility = View.VISIBLE
+                    binding.constraintErrorLayout.visibility = View.GONE
 
-                binding.progressBar.visibility = View.GONE
-            }
-        }
-
-
-        _viewModel.recruitmentData.observe(viewLifecycleOwner) {
-            if (it.isEmpty()) {
-                loadDataFromNet()
-            } else {
-                binding.swipeRefreshLayout.isRefreshing = false
-                val recyclerView = binding.recyclerView
-                recyclerView.visibility = View.VISIBLE
-
-                if (isTablet)
-                    binding.verticalSeparator?.visibility = View.VISIBLE
-
-                recyclerView.layoutManager = LinearLayoutManager(context)
-                recyclerView.addItemDecoration(
-                    DividerItemDecoration(
-                        context,
-                        DividerItemDecoration.VERTICAL
+                    binding.recyclerView.layoutManager = LinearLayoutManager(context)
+                    binding.recyclerView.addItemDecoration(
+                        DividerItemDecoration(
+                            context,
+                            DividerItemDecoration.VERTICAL
+                        )
                     )
-                )
-                recyclerView.adapter = RecyclerViewAdapter(it)
-                recyclerView.addOnItemClickListener(object : OnItemClickListener {
-                    override fun onItemClicked(position: Int, view: View) {
-                        if (it[position].descriptionLink == null)
-                            return
+                    binding.recyclerView.adapter = RecyclerViewAdapter(it.data)
+                    binding.recyclerView.addOnItemClickListener(object : OnItemClickListener {
+                        override fun onItemClicked(position: Int, view: View) {
+                            if (it.data[position].descriptionLink == null)
+                                return
 
-                        if (isTablet) {
-                            val webView = binding.webView
-                            webView?.webViewClient = WebViewClient()
-                            webView?.loadUrl(it[position].descriptionLink!!)
-                            binding.webView?.visibility = View.VISIBLE
-                        } else {
-                            val action =
-                                FragmentRecruitmentDataListDirections.actionRecruitmentDataListToWebView(
-                                    it[position].descriptionLink!!
-                                )
-                            findNavController().navigate(action)
+                            if (isTablet) {
+                                val webView = binding.webView
+                                webView?.webViewClient = WebViewClient()
+                                webView?.loadUrl(it.data[position].descriptionLink!!)
+                                binding.webView?.visibility = View.VISIBLE
+                            } else {
+                                val action =
+                                    FragmentRecruitmentDataListDirections.actionRecruitmentDataListToWebView(
+                                        it.data[position].descriptionLink!!
+                                    )
+                                findNavController().navigate(action)
+                            }
                         }
-                    }
 
-                })
-            }
-        }
-        _viewModel.getWebRecruitmentTaskData.observe(viewLifecycleOwner) {
-            if (it) {
-                getDBData()
-            }
-        }
-
-        _viewModel.errorHandler.observe(viewLifecycleOwner) {
-            binding.errorText.text = it.second ?: ""
-            if (it.first) {
-                binding.buttonRetry.visibility = View.VISIBLE
-                binding.errorText.visibility = View.VISIBLE
-            } else {
-                binding.buttonRetry.visibility = View.GONE
-                binding.errorText.visibility = View.GONE
+                    })
+                }
+                is RecruitmentDataState.Error -> {
+                    binding.constraintLoadingLayout.visibility = View.GONE
+                    binding.constraintSuccessLayout.visibility = View.GONE
+                    binding.constraintErrorLayout.visibility = View.VISIBLE
+                }
             }
         }
 
@@ -106,26 +89,15 @@ class FragmentRecruitmentDataList : Fragment() {
             refreshData()
         }
 
-        getDBData()
         return binding.root
     }
 
-    private fun getDBData() {
-        _viewModel.queryDBGetRecruitmentTaskData()
+    private fun getData() {
+        _viewModel.getData()
     }
-    private fun loadDataFromNet() {
-        binding.recyclerView.visibility = View.GONE
-        _viewModel.getWebRecruitmentTaskData()
-    }
+
 
     private fun refreshData() {
-        if (isTablet) {
-            binding.webView?.visibility = View.GONE
-            binding.verticalSeparator?.visibility = View.GONE
-        }
-
-        binding.recyclerView.visibility = View.GONE
-        binding.swipeRefreshLayout.isRefreshing = false
         _viewModel.refreshData()
     }
 
@@ -133,12 +105,10 @@ class FragmentRecruitmentDataList : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonRetry.setOnClickListener {
-            if (isTablet)
-                binding.webView?.visibility = View.GONE
-
             refreshData()
         }
 
+        getData()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

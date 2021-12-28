@@ -1,6 +1,6 @@
 package mszczep.futuremindrecruitapp.di
 
-import mszczep.futuremindrecruitapp.data.NetworkService
+import mszczep.futuremindrecruitapp.api.NetworkService
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
 import retrofit2.Retrofit

@@ -20,7 +20,7 @@ data class RecruitmentData(
 interface RecruitmentDataDao {
 
     @Insert
-    suspend fun insertNewData(data: RecruitmentData)
+    suspend fun insertAll(recruitmentData: List<RecruitmentData>)
 
     @Query("select * from recruitment_data order by order_id DESC")
     suspend fun getAll(): List<RecruitmentData>

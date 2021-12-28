@@ -4,85 +4,83 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import mszczep.futuremindrecruitapp.data.Network
-import mszczep.futuremindrecruitapp.data.RecruitmentDataDao
-import mszczep.futuremindrecruitapp.data.RecruitmentData
+import mszczep.futuremindrecruitapp.api.NetworkApi
+import mszczep.futuremindrecruitapp.data.*
+import mszczep.futuremindrecruitapp.utils.extractUrl
 import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
-import java.net.UnknownHostException
 import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivityViewModel(
-    private val mNetwork: Network,
+    private val networkApi: NetworkApi,
     private val recruitmentDataDao: RecruitmentDataDao
 ) : ViewModel() {
 
-    private val mProgressBar = MutableLiveData<Boolean>()
-    val progressBar: LiveData<Boolean> get() = mProgressBar
+    private val _recruitmentDataState = MutableLiveData<RecruitmentDataState>()
+    val recruitmentDataState: LiveData<RecruitmentDataState> get() = _recruitmentDataState
 
-    private val mErrorHandler = MutableLiveData<Pair<Boolean, String?>>()
-    val errorHandler: LiveData<Pair<Boolean,String?>> get() = mErrorHandler
+    private val defaultError = "Something had gone wrong. Please try again later."
 
-    private val mRecruitmentData = MutableLiveData<List<RecruitmentData>>()
-    val recruitmentData: LiveData<List<RecruitmentData>> get() = mRecruitmentData
-
-    private val mGetWebRecruitmentTaskData = MutableLiveData<Boolean>()
-    val getWebRecruitmentTaskData: LiveData<Boolean> get() = mGetWebRecruitmentTaskData
-
-    fun getWebRecruitmentTaskData() {
-        launchDataLoad {
-            try {
-                val response = mNetwork.getRecruitmentTaskData()
-                if (response.code() != 200 || response.body().isNullOrEmpty()) {
-                    mErrorHandler.value = Pair(true, "An error has occurred during data download. Please try again")
-                } else {
-                    response.body()!!.forEach {
-                        val splitLink = extractLink(it.description)
-                        val description = if (splitLink != null) splitLink[0] else it.description
-                        val extractedLink = if (splitLink != null) splitLink[1] else null
-                        recruitmentDataDao.insertNewData(
-                            RecruitmentData(
-                                0,
-                                description,
-                                it.image_url,
-                                formatDate(it.modificationDate) ?: it.modificationDate,
-                                it.orderId,
-                                it.title,
-                                extractedLink
-                            )
-                        )
-                    }
-                    mGetWebRecruitmentTaskData.value = true
-                }
-            } catch (ex: UnknownHostException) {
-                mErrorHandler.value = Pair(true, "Error connecting to the internet. Check your connection.")
-                ex.printStackTrace()
-            } catch (ex: Exception) {
-                mErrorHandler.value = Pair(true, "Something had gone wrong. Try again.")
-                ex.printStackTrace()
-            }
+    fun getData() {
+        _recruitmentDataState.value = RecruitmentDataState.Loading
+        viewModelScope.launch {
+            val recruitmentData = dbQueryGetRecruitmentData()
+            if (recruitmentData.isEmpty())
+                synchronizeData()
+            else
+                _recruitmentDataState.value = RecruitmentDataState.Success(recruitmentData)
         }
     }
 
     fun refreshData() {
+        _recruitmentDataState.value = RecruitmentDataState.Loading
         viewModelScope.launch {
-            deleteAllData()
-            getWebRecruitmentTaskData()
+            deleteAllRecruitmentData()
+            synchronizeData()
         }
     }
 
-    private fun deleteAllData() {
-        viewModelScope.launch {
-            recruitmentDataDao.deleteAllRecruitmentData()
+    private suspend fun synchronizeData() {
+        val recruitmentData = getNetworkRecruitmentData() ?: return
+        val preparedData = ArrayList<RecruitmentData>()
+        recruitmentData.forEach {
+            val preparedRecruitmentData = prepareDataForInsert(it)
+            preparedData.add(preparedRecruitmentData)
+        }
+        insertRecruitmentData(preparedData)
+        _recruitmentDataState.value = RecruitmentDataState.Success(preparedData)
+    }
+
+    private suspend fun getNetworkRecruitmentData(): List<RecruitmentDataResponse>? {
+        return try {
+            networkApi.getRecruitmentData()
+        } catch (ex: Exception) {
+            _recruitmentDataState.value = RecruitmentDataState.Error(ex.message ?: defaultError)
+            null
         }
     }
 
-    private fun extractLink(string: String): List<String>? {
-        val splitString = string.split("\t")
-        return if (splitString.size == 2) splitString else null
+
+    private suspend fun deleteAllRecruitmentData() {
+        recruitmentDataDao.deleteAllRecruitmentData()
+    }
+
+    private fun prepareDataForInsert(recruitmentData: RecruitmentDataResponse): RecruitmentData {
+        val url = recruitmentData.description.extractUrl()
+        return RecruitmentData(
+            0,
+            recruitmentData.description,
+            recruitmentData.image_url,
+            recruitmentData.modificationDate, //TODO format date
+            recruitmentData.orderId,
+            recruitmentData.title,
+            url
+        )
+    }
+
+    private suspend fun insertRecruitmentData(recruitmentData: List<RecruitmentData>) {
+        recruitmentDataDao.insertAll(recruitmentData)
     }
 
     private fun formatDate(string: String): String? {
@@ -97,26 +95,25 @@ class MainActivityViewModel(
         }
     }
 
-    fun queryDBGetRecruitmentTaskData() {
-        launchDataLoad {
-            val data = recruitmentDataDao.getAll()
-            mRecruitmentData.value = data
-        }
+    private suspend fun dbQueryGetRecruitmentData(): List<RecruitmentData> {
+        return recruitmentDataDao.getAll()
+
     }
 
 
-    private fun launchDataLoad(block: suspend () -> Unit): Job {
-        return viewModelScope.launch {
-            try {
-                mProgressBar.value = true
-                mErrorHandler.value = Pair(false, null)
-                block()
-            } catch (ex: IllegalStateException) {
-                ex.printStackTrace()
-            } finally {
-                mProgressBar.value = false
-            }
-        }
-    }
+//
+//    private fun launchDataLoad(block: suspend () -> Unit): Job {
+//        return viewModelScope.launch {
+//            try {
+//                mProgressBar.value = true
+//                mErrorHandler.value = Pair(false, null)
+//                block()
+//            } catch (ex: IllegalStateException) {
+//                ex.printStackTrace()
+//            } finally {
+//                mProgressBar.value = false
+//            }
+//        }
+//    }
 
 }
