@@ -23,7 +23,7 @@ interface RecruitmentDataDao {
     suspend fun insertNewData(data: RecruitmentData)
 
     @Query("select * from recruitment_data order by order_id DESC")
-    fun getAll(): List<RecruitmentData>
+    suspend fun getAll(): List<RecruitmentData>
 
     @Query("delete from recruitment_data")
     suspend fun deleteAllRecruitmentData(): Int

@@ -36,10 +36,10 @@ class FragmentRecruitmentDataList : Fragment() {
 
         _viewModel.progressBar.observe(viewLifecycleOwner) {
             if (it) {
-                binding.progressBar?.visibility = View.VISIBLE
+                binding.progressBar.visibility = View.VISIBLE
             } else {
 
-                binding.progressBar?.visibility = View.GONE
+                binding.progressBar.visibility = View.GONE
             }
         }
 
@@ -50,20 +50,20 @@ class FragmentRecruitmentDataList : Fragment() {
             } else {
                 binding.swipeRefreshLayout.isRefreshing = false
                 val recyclerView = binding.recyclerView
-                recyclerView?.visibility = View.VISIBLE
+                recyclerView.visibility = View.VISIBLE
 
                 if (isTablet)
-                    binding.theGreatSeparator?.visibility = View.VISIBLE
+                    binding.verticalSeparator?.visibility = View.VISIBLE
 
-                recyclerView?.layoutManager = LinearLayoutManager(context)
-                recyclerView?.addItemDecoration(
+                recyclerView.layoutManager = LinearLayoutManager(context)
+                recyclerView.addItemDecoration(
                     DividerItemDecoration(
                         context,
                         DividerItemDecoration.VERTICAL
                     )
                 )
-                recyclerView?.adapter = RecyclerViewAdapter(it)
-                recyclerView?.addOnItemClickListener(object : OnItemClickListener {
+                recyclerView.adapter = RecyclerViewAdapter(it)
+                recyclerView.addOnItemClickListener(object : OnItemClickListener {
                     override fun onItemClicked(position: Int, view: View) {
                         if (it[position].descriptionLink == null)
                             return
@@ -114,17 +114,17 @@ class FragmentRecruitmentDataList : Fragment() {
         _viewModel.queryDBGetRecruitmentTaskData()
     }
     private fun loadDataFromNet() {
-        binding.recyclerView?.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
         _viewModel.getWebRecruitmentTaskData()
     }
 
     private fun refreshData() {
         if (isTablet) {
             binding.webView?.visibility = View.GONE
-            binding.theGreatSeparator?.visibility = View.GONE
+            binding.verticalSeparator?.visibility = View.GONE
         }
 
-        binding.recyclerView?.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
         binding.swipeRefreshLayout.isRefreshing = false
         _viewModel.refreshData()
     }
