@@ -72,7 +72,7 @@ class MainActivityViewModel(
         val url = recruitmentData.description.extractUrl()
         return RecruitmentData(
             0,
-            recruitmentData.description,
+            recruitmentData.description.replace("$url", ""),
             recruitmentData.image_url,
             recruitmentData.modificationDate.formatDate(),
             recruitmentData.orderId,
