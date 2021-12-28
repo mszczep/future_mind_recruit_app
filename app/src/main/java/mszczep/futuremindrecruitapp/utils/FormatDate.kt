@@ -8,7 +8,6 @@ import java.util.*
 fun String.formatDate(): String {
     val formatter = DateTimeFormatter
         .ofLocalizedDate(FormatStyle.MEDIUM)
-        .withLocale(Locale.getDefault())
 
     return LocalDate.parse(this).format(formatter)
 }
