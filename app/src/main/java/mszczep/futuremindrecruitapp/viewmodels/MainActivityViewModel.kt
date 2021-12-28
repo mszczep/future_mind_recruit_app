@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import mszczep.futuremindrecruitapp.api.NetworkApi
 import mszczep.futuremindrecruitapp.data.*
 import mszczep.futuremindrecruitapp.utils.extractUrl
+import mszczep.futuremindrecruitapp.utils.formatDate
 import java.lang.IllegalArgumentException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -72,7 +73,7 @@ class MainActivityViewModel(
             0,
             recruitmentData.description,
             recruitmentData.image_url,
-            recruitmentData.modificationDate, //TODO format date
+            recruitmentData.modificationDate.formatDate(),
             recruitmentData.orderId,
             recruitmentData.title,
             url

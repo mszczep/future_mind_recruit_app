@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/fragment_recruitment_data_list"
         android:name="mszczep.futuremindrecruitapp.ui.FragmentRecruitmentDataList"
-        android:label="@string/first_fragment_label"
+        android:label="@string/recruitment_data_list_label"
         tools:layout="@layout/fragment_recruitment_data_list">
 
         <action
@@ -18,7 +18,7 @@
     <fragment
         android:id="@+id/fragment_web_view"
         android:name="mszczep.futuremindrecruitapp.ui.FragmentWebView"
-        android:label="@string/second_fragment_label"
+        android:label="@string/web_view_label"
         tools:layout="@layout/fragment_web_view">
 
         <action
